@@ -37,7 +37,7 @@ npm run dev
 Make sure your backend server is running — the frontend connects to your Express + Socket.IO server with JWT & Redis.
 
 🔗 Backend Repo
-🔗 Backend: AI-Chat-Application-Backend https://github.com/iamJ3/AI-Chat-Application-Backend-
+🔗 Backend: AI-Chat-Application-Backend
 Uses: Express 5, MongoDB, JWT Auth, Redis Pub/Sub, Socket.IO.
 
 ✨ Roadmap
@@ -60,4 +60,5 @@ Open an issue or fork the project — suggestions & PRs welcome!
 MIT
 
 📣 Connect
-If you like this, drop a ⭐, connect on LinkedIn (add your link), or just say hi!
+If you like this, drop a ⭐, connect on LinkedIn, or just say hi!
+
