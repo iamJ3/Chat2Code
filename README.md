@@ -1,17 +1,63 @@
-<<<<<<< HEAD
-# React + Vite
+🧠 AI Chat Application (Frontend)
+A sleek real-time chat application built with React, Tailwind CSS, and Socket.IO — ready to plug in powerful AI (Gemini) features.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 Tech Stack
+React 19 + Vite — blazing fast dev & build.
 
-Currently, two official plugins are available:
+React Router DOM v7 — smooth multi-page flow.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Socket.IO Client — real-time messaging, instant updates.
 
-## Expanding the ESLint configuration
+Axios — secure REST calls to your Express backend.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# AI-Chat-Application
-A Gemini powered ai chat application with built in server which can run code and live time edit feature in a codebase.
->>>>>>> 3e4366fb7facf42d618e981319c85c635866ce55
+Tailwind CSS 4 — modern, dark-themed UI.
+
+Lucide Icons — crisp, minimal icon set.
+
+📚 Features
+✅ Real-time Chat: Connects to a Socket.IO server.
+✅ Collaborators Panel: Add/manage project users.
+✅ JWT Auth Ready: Uses secure cookie/token auth.
+✅ Dark Mode UI: Polished, responsive, chat-first design.
+✅ Gemini AI Integration (Upcoming): Chat with AI, generate code, edit in real-time.
+
+⚙️ Setup
+bash
+Copy
+Edit
+# Clone the repo
+git clone https://github.com/iamJ3/AI-Chat-Application.git
+
+# Install dependencies
+cd AI-Chat-Application
+npm install
+
+# Start the dev server
+npm run dev
+Make sure your backend server is running — the frontend connects to your Express + Socket.IO server with JWT & Redis.
+
+🔗 Backend Repo
+🔗 Backend: AI-Chat-Application-Backend https://github.com/iamJ3/AI-Chat-Application-Backend-
+Uses: Express 5, MongoDB, JWT Auth, Redis Pub/Sub, Socket.IO.
+
+✨ Roadmap
+ Real-time chat (Socket.IO)
+
+ Collaborators & projects
+
+ JWT Auth flow
+
+ Gemini AI integration (Work in progress)
+
+ AI-based code generation & edits
+
+ Redis scaling
+
+🤝 Contributing
+Open an issue or fork the project — suggestions & PRs welcome!
+
+📜 License
+MIT
+
+📣 Connect
+If you like this, drop a ⭐, connect on LinkedIn (add your link), or just say hi!
