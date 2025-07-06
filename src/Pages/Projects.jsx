@@ -1,13 +1,25 @@
 import { useLocation } from "react-router-dom";
-import { Plus, Send, User2Icon, Users, X } from "lucide-react";
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "../config/axios";
 import { UserContext } from "../context/User.context.jsx";
+import 'highlight.js/styles/github-dark.css';
+import { getWebContainer } from "../config/WebContainer";
 import {
   initilizeSocket,
   reciveMessage,
   SendMessage,
 } from "../config/socket";
+
+// Import components
+import ChatSection from "../components/ChatSection";
+import FileExplorer from "../components/FileExplorer";
+import CodeEditor from "../components/CodeEditor";
+import OutputModal from "../components/OutputModal";
+import AddCollaboratorModal from "../components/AddCollaboratorModal";
+
+// Import utilities
+import { toWebContainerFileTree, cleanAnsiCodes, getRunCommand } from "../utils/codeUtils";
+import { WriteWIthAI, SyntaxHighlightedCode } from "../utils/aiMessageUtils.jsx";
 
 const Projects = () => {
   const location = useLocation();
@@ -15,23 +27,93 @@ const Projects = () => {
 
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const messageBox = useRef(null);
   const [selectedUserId, setSelectedUserId] = useState([]);
   const [users, setUsers] = useState([]);
   const [project, setProject] = useState(location.state.project);
   const [message, setMessage] = useState("");
-
-  const messageBox = useRef(null);
+  const [messages, setMessages] = useState([]);
+  const [currentfile, setcurrentfile] = useState(null)
+  const [filetree, setfiletree] = useState({});
+  const [openfiles, setopenfiles] = useState([])
+  const [webcontainer, setWebcontainer] = useState(null)
+  const [runProcess, setRunProcess] = useState(null);
+  const [iframeUrl, setIframeUrl] = useState("");
+  const [showOutput, setShowOutput] = useState(false);
+  const [consoleOutput, setConsoleOutput] = useState("");
+  const [isRunning, setIsRunning] = useState(false);
+  const [activeTab, setActiveTab] = useState('browser');
 
   useEffect(() => {
+    console.log("🔧 Projects component mounted, checking WebContainer...");
+
+    if (!webcontainer) {
+      console.log("🔄 WebContainer not initialized, starting initialization...");
+      getWebContainer().then((container) => {
+        setWebcontainer(container)
+        console.log("🎉 WebContainer initialized in component:", container)
+      }).catch((error) => {
+        console.error("💥 Failed to initialize WebContainer:", error);
+        alert("Failed to initialize WebContainer. Please check your connection.");
+      });
+    } else {
+      console.log("✅ WebContainer already initialized:", webcontainer);
+    }
+
+    webcontainer?.mount(message.filetree)
     initilizeSocket(project._id);
 
     reciveMessage("project-message", (data) => {
-      console.log("Received message:", data);
-
-      // Only append if not the sender
-      if (data.sender !== user.email) {
-        appendIncomingMsg(data);
+      console.log("Received message:", data)
+      let message;
+      // Check if data.message is already an object or needs to be parsed
+      if (typeof data.message === 'string') {
+        // Only try to parse if it looks like JSON (starts with { or [)
+        if (data.message.trim().startsWith('{') || data.message.trim().startsWith('[')) {
+          try {
+            message = JSON.parse(data.message);
+          } catch (error) {
+            console.error('Failed to parse message:', error);
+            message = data.message; // Use as is if parsing fails
+          }
+        } else {
+          // It's a regular string message, not JSON
+          message = data.message;
+        }
       }
+
+      else {
+        message = data.message; // Already an object
+      }
+
+      if (message && message.fileTree) {
+        // Transform the fileTree structure to match frontend expectations
+        const transformedFileTree = {};
+        Object.keys(message.fileTree).forEach(fileName => {
+          const fileData = message.fileTree[fileName];
+          if (fileData.file && fileData.file.contents) {
+            transformedFileTree[fileName] = {
+              content: fileData.file.contents
+            };
+          }
+        });
+        // Merge with existing files instead of replacing
+        setfiletree(prevFileTree => ({
+          ...prevFileTree,
+          ...transformedFileTree
+        }));
+
+        // Also add the files to openfiles if they're not already there
+        Object.keys(transformedFileTree).forEach(fileName => {
+          setopenfiles(prevOpenFiles => {
+            if (!prevOpenFiles.includes(fileName)) {
+              return [...prevOpenFiles, fileName];
+            }
+            return prevOpenFiles;
+          });
+        });
+      }
+      setMessages((prev) => [...prev, data]);
     });
 
     axios.get(`/projects/get-project/${project._id}`).then((res) => {
@@ -42,6 +124,13 @@ const Projects = () => {
       setUsers(res.data.users);
     });
   }, []);
+
+
+  useEffect(() => {
+    scrollToBottom();
+
+
+  }, [message])
 
   const handleUserSelect = (userId) => {
     if (selectedUserId.includes(userId)) {
@@ -63,41 +152,14 @@ const Projects = () => {
   const SendMsg = () => {
     if (!message.trim()) return;
 
-    SendMessage("project-message", {
+    const msgObj = {
       sender: user.email,
       message,
-    });
+    };
 
-    appendOutgoingMsg(message);
+    SendMessage("project-message", msgObj);
+    setMessages((prev) => [...prev, msgObj]);
     setMessage("");
-  };
-
-  const appendIncomingMsg = (msgObj) => {
-    const newMsg = document.createElement("div");
-    newMsg.className =
-      "max-w-[70%] bg-slate-700/80 rounded-2xl shadow p-4 mb-2";
-    newMsg.innerHTML = `
-      <div class="flex items-center gap-2 mb-1">
-        <small class="text-xs text-indigo-400 font-semibold">${msgObj.sender}</small>
-      </div>
-      <p class="text-sm text-slate-200">${msgObj.message}</p>
-    `;
-    messageBox.current.appendChild(newMsg);
-    scrollToBottom();
-  };
-
-  const appendOutgoingMsg = (msg) => {
-    const newMsg = document.createElement("div");
-    newMsg.className =
-      "ml-auto max-w-[70%] bg-indigo-700/90 rounded-2xl shadow p-4 mb-2";
-    newMsg.innerHTML = `
-      <div class="flex items-center gap-2 mb-1">
-        <small class="text-xs text-indigo-100 font-semibold">${user.email}</small>
-      </div>
-      <p class="text-sm text-white">${msg}</p>
-    `;
-    messageBox.current.appendChild(newMsg);
-    scrollToBottom();
   };
 
   const scrollToBottom = () => {
@@ -106,148 +168,237 @@ const Projects = () => {
     }
   };
 
+
+
+  // Function to run code
+  const runCode = async (fileName) => {
+    if (!webcontainer || !filetree[fileName]) return;
+
+    setIsRunning(true);
+    setConsoleOutput("");
+    setIframeUrl("");
+
+    try {
+      await webcontainer.mount(toWebContainerFileTree(filetree));
+
+      // Kill previous run process if exists
+      if (runProcess) {
+        await runProcess.kill();
+      }
+
+      const runConfig = getRunCommand(fileName);
+      
+      if (!runConfig) {
+        setConsoleOutput("❌ Cannot run this file type. Supported: .js, .py, .java, .cpp, .c");
+        setIsRunning(false);
+        return;
+      }
+
+      // For Node.js projects with package.json, use npm start
+      if (filetree['package.json'] && (fileName.endsWith('.js') || fileName.endsWith('.jsx'))) {
+        setConsoleOutput("📦 Installing dependencies...\n");
+        
+        // Install dependencies first
+        const installProcess = await webcontainer.spawn("npm", ["install"]);
+        installProcess.output.pipeTo(new WritableStream({
+          write(chunk) {
+            const cleanChunk = cleanAnsiCodes(chunk);
+            // Only show important install messages, filter out verbose npm output
+            if (!cleanChunk.includes('npm notice') && !cleanChunk.includes('npm timing')) {
+              setConsoleOutput(prev => prev + cleanChunk);
+            }
+          }
+        }));
+        
+        await installProcess.exit;
+        setConsoleOutput(prev => prev + "\n✅ Dependencies installed successfully!\n\n🚀 Starting application...\n");
+
+        // Start the server
+        let tempRunProcess = await webcontainer.spawn("npm", ["start"]);
+        tempRunProcess.output.pipeTo(new WritableStream({
+          write(chunk) {
+            const cleanChunk = cleanAnsiCodes(chunk);
+            // Filter out npm start wrapper messages and show only actual output
+            if (!cleanChunk.includes('> ') && !cleanChunk.includes('npm start')) {
+              setConsoleOutput(prev => prev + cleanChunk);
+            }
+          }
+        }));
+
+        setRunProcess(tempRunProcess);
+
+        // Listen for server-ready event
+        webcontainer.on('server-ready', (port, url) => {
+          console.log(port, url);
+          setIframeUrl(url);
+          setConsoleOutput(prev => prev + `\n🌐 Server running on port ${port}\n📱 Open in browser: ${url}\n`);
+        });
+      } else {
+        // For all other languages, run the file directly with language-specific commands
+        let tempRunProcess;
+        
+        if (fileName.endsWith('.py') || fileName.endsWith('.python')) {
+          setConsoleOutput(`🐍 Running ${fileName}...\n`);
+          try {
+            tempRunProcess = await webcontainer.spawn("python", [fileName]);
+          } catch {
+            setConsoleOutput(`❌ Python not available in this environment.\n\n💡 Alternatives:\n• Convert to JavaScript (.js)\n• Use online Python interpreters like repl.it\n• Install Python locally for development\n\n🔧 WebContainer currently supports: Node.js, npm, and basic shell commands.`);
+            setIsRunning(false);
+            return;
+          }
+        } else if (fileName.endsWith('.java')) {
+          setConsoleOutput(`☕ Running ${fileName}...\n`);
+          try {
+            // For Java, compile first then run
+            const compileProcess = await webcontainer.spawn("javac", [fileName]);
+            compileProcess.output.pipeTo(new WritableStream({
+              write(chunk) {
+                setConsoleOutput(prev => prev + cleanAnsiCodes(chunk));
+              }
+            }));
+            await compileProcess.exit;
+            
+            const className = fileName.replace('.java', '');
+            tempRunProcess = await webcontainer.spawn("java", [className]);
+          } catch {
+            setConsoleOutput(`❌ Java not available in this environment.\n\n💡 Alternatives:\n• Convert to JavaScript (.js)\n• Use online Java compilers like replit.com\n• Install Java locally for development\n\n🔧 WebContainer currently supports: Node.js, npm, and basic shell commands.`);
+            setIsRunning(false);
+            return;
+          }
+        } else if (fileName.endsWith('.cpp') || fileName.endsWith('.cc') || fileName.endsWith('.cxx')) {
+          setConsoleOutput(`⚡ Running ${fileName}...\n`);
+          try {
+            // For C++, compile then run
+            const outputName = fileName.replace(/\.(cpp|cc|cxx)$/, '');
+            const compileProcess = await webcontainer.spawn("g++", [fileName, "-o", outputName]);
+            compileProcess.output.pipeTo(new WritableStream({
+              write(chunk) {
+                setConsoleOutput(prev => prev + cleanAnsiCodes(chunk));
+              }
+            }));
+            await compileProcess.exit;
+            
+            tempRunProcess = await webcontainer.spawn("./" + outputName);
+          } catch {
+            setConsoleOutput(`❌ C++ not available in this environment.\n\n💡 Alternatives:\n• Convert to JavaScript (.js)\n• Use online C++ compilers like replit.com\n• Install g++ locally for development\n\n🔧 WebContainer currently supports: Node.js, npm, and basic shell commands.`);
+            setIsRunning(false);
+            return;
+          }
+        } else if (fileName.endsWith('.c')) {
+          setConsoleOutput(`⚡ Running ${fileName}...\n`);
+          try {
+            // For C, compile then run
+            const outputName = fileName.replace('.c', '');
+            const compileProcess = await webcontainer.spawn("gcc", [fileName, "-o", outputName]);
+            compileProcess.output.pipeTo(new WritableStream({
+              write(chunk) {
+                setConsoleOutput(prev => prev + cleanAnsiCodes(chunk));
+              }
+            }));
+            await compileProcess.exit;
+            
+            tempRunProcess = await webcontainer.spawn("./" + outputName);
+          } catch {
+            setConsoleOutput(`❌ C not available in this environment.\n\n💡 Alternatives:\n• Convert to JavaScript (.js)\n• Use online C compilers like replit.com\n• Install gcc locally for development\n\n🔧 WebContainer currently supports: Node.js, npm, and basic shell commands.`);
+            setIsRunning(false);
+            return;
+          }
+        } else {
+          // For JavaScript files without package.json, run directly with node
+          setConsoleOutput(`🚀 Running ${fileName}...\n`);
+          tempRunProcess = await webcontainer.spawn("node", [fileName]);
+        }
+        
+        tempRunProcess.output.pipeTo(new WritableStream({
+          write(chunk) {
+            setConsoleOutput(prev => prev + cleanAnsiCodes(chunk));
+          }
+        }));
+
+        setRunProcess(tempRunProcess);
+      }
+
+      // Show output after a short delay
+      setTimeout(() => {
+        setIsRunning(false);
+      }, 1000);
+
+    } catch (error) {
+      setConsoleOutput(`❌ Error: ${error.message}`);
+      setIsRunning(false);
+    }
+  };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-100 font-inter">
       <main className="flex h-screen overflow-hidden">
         {/* Chat Section */}
-        <section className="flex flex-col h-full min-w-[22rem] bg-slate-800/90 shadow-xl relative rounded-r-2xl">
-          {/* Header */}
-          <header className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-900/80">
-            <button
-              className="flex gap-2 items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Members</span>
-            </button>
+        <ChatSection
+          isSidePanelOpen={isSidePanelOpen}
+          setIsSidePanelOpen={setIsSidePanelOpen}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          messageBox={messageBox}
+          selectedUserId={selectedUserId}
+          setSelectedUserId={setSelectedUserId}
+          users={users}
+          project={project}
+          message={message}
+          setMessage={setMessage}
+          messages={messages}
+          SendMsg={SendMsg}
+          handleUserSelect={handleUserSelect}
+          addCollaborators={addCollaborators}
+          WriteWIthAI={WriteWIthAI}
+          SyntaxHighlightedCode={SyntaxHighlightedCode}
+          user={user}
+        />
 
-            <Users
-              onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-              className="cursor-pointer hover:text-indigo-400 transition"
-              size={28}
-            />
-          </header>
+        {/* File Tree Section */}
+        <section className="flex flex-grow h-full">
+          {/* Explorer Sidebar */}
+          <FileExplorer
+            filetree={filetree}
+            setcurrentfile={setcurrentfile}
+            openfiles={openfiles}
+            setopenfiles={setopenfiles}
+          />
 
-          {/* Messages */}
-          <div className="flex flex-col flex-grow overflow-y-auto p-6">
-            <div
-              ref={messageBox}
-              className="message-box flex flex-col gap-2 max-w-full"
-            ></div>
-          </div>
-
-          {/* Input */}
-          <div className="flex w-full border-t border-slate-700 bg-slate-900/80 p-4 gap-3">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Enter your message"
-              className="flex-grow px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-100 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 transition"
-            />
-            <button
-              onClick={SendMsg}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-3 shadow transition"
-            >
-              <Send size={22} />
-            </button>
-          </div>
-
-          {/* Side Panel */}
-          <div
-            className={`absolute top-0 left-0 h-full w-full bg-slate-900/95 z-20 shadow-2xl transform transition-transform duration-300 ${
-              isSidePanelOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
-          >
-            <header className="flex justify-between items-center px-6 py-4 bg-slate-800 border-b border-slate-700 rounded-tr-2xl">
-              <h1 className="font-semibold text-xl text-indigo-300">
-                Collaborators
-              </h1>
-              <button
-                onClick={() => setIsSidePanelOpen(false)}
-                className="p-2 hover:bg-slate-700 rounded-full transition"
-              >
-                <X size={22} />
-              </button>
-            </header>
-
-            <div className="side-panel flex flex-col gap-2 p-4 overflow-y-auto max-h-full">
-              {users
-                .filter((u) =>
-                  Array.isArray(project.users)
-                    ? project.users.some(
-                        (projUser) =>
-                          (projUser._id || projUser) === u._id
-                      )
-                    : false
-                )
-                .map((u) => (
-                  <div
-                    key={u._id}
-                    onClick={() => handleUserSelect(u._id)}
-                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition ${
-                      selectedUserId.includes(u._id)
-                        ? "bg-indigo-600"
-                        : "bg-slate-800/80"
-                    } hover:bg-slate-700`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <User2Icon size={20} className="text-indigo-300" />
-                      <span>{u.email}</span>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
+          {/* Code Editor */}
+          <CodeEditor
+            currentfile={currentfile}
+            setcurrentfile={setcurrentfile}
+            openfiles={openfiles}
+            setopenfiles={setopenfiles}
+            filetree={filetree}
+            setfiletree={setfiletree}
+            runCode={runCode}
+            webcontainer={webcontainer}
+            isRunning={isRunning}
+            iframeUrl={iframeUrl}
+            consoleOutput={consoleOutput}
+            setShowOutput={setShowOutput}
+          />
         </section>
 
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-            <div className="relative bg-slate-800 p-6 rounded-xl shadow-lg w-[22rem] max-h-[80vh] flex flex-col">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-indigo-300">
-                  Add Collaborator
-                </h2>
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-slate-400 hover:text-slate-200 transition"
-                >
-                  <X size={22} />
-                </button>
-              </div>
+        {/* Output Browser Modal - moved outside section for proper z-index */}
+        <OutputModal
+          showOutput={showOutput}
+          setShowOutput={setShowOutput}
+          iframeUrl={iframeUrl}
+          consoleOutput={consoleOutput}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
 
-              <div
-                className="flex flex-col gap-2 overflow-y-auto mb-4 pr-1"
-                style={{ maxHeight: "40vh" }}
-              >
-                {users.map((u) => (
-                  <div
-                    key={u._id}
-                    onClick={() => handleUserSelect(u._id)}
-                    className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition ${
-                      selectedUserId.includes(u._id)
-                        ? "bg-indigo-600"
-                        : "bg-slate-800/80"
-                    } hover:bg-slate-700`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <User2Icon size={20} className="text-indigo-300" />
-                      <span>{u.email}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition mt-auto"
-                onClick={addCollaborators}
-              >
-                Add Members
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Add Collaborator Modal */}
+        <AddCollaboratorModal
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          users={users}
+          selectedUserId={selectedUserId}
+          handleUserSelect={handleUserSelect}
+          addCollaborators={addCollaborators}
+        />
       </main>
     </div>
   );
