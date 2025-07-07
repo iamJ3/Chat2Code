@@ -39,3 +39,7 @@ scroll-behavior:smooth ;
 *::-webkit-scrollbar-thumb:hover {
   background-color: #818cf8;         /* Lighter indigo on hover */
 }
+/*👉body {
+  color: white;
+}👈*/
+html,body { color: white; }

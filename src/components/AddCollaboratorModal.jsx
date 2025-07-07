@@ -12,7 +12,7 @@ const AddCollaboratorModal = ({
   if (!isModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-50">
+    <div className="fixed inset-0 text-white flex items-center justify-center bg-black/70 z-50">
       <div className="relative bg-slate-800 p-8 rounded-2xl shadow-2xl w-[22rem] max-h-[80vh] flex flex-col border border-slate-700/60">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-indigo-300">

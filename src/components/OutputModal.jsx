@@ -6,83 +6,88 @@ const OutputModal = ({
   iframeUrl,
   consoleOutput,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  setIframeUrl
 }) => {
-  // Debug logging
-  console.log('OutputModal props:', { showOutput, iframeUrl, consoleOutput, activeTab });
-  
   if (!showOutput) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
-      <div className="relative w-[90vw] max-w-4xl h-[80vh] bg-slate-900 border border-slate-700 rounded-lg shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md">
+      <div className="relative w-[90vw] max-w-5xl h-[80vh] bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        
+        {/* Close Button */}
         <button
-          className="absolute top-4 right-4 px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded shadow font-semibold z-10"
+          className="absolute top-4 right-4 px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg font-semibold transition duration-200"
           onClick={() => setShowOutput(false)}
         >
-          Close Output
+          ✕ Close
         </button>
-        
-        {/* Tabs for different output types */}
+
+        {/* Tabs */}
         <div className="flex border-b border-slate-700">
           {iframeUrl && (
             <button
-              className={`px-4 py-2 text-slate-300 hover:text-white border-b-2 ${activeTab === 'browser' ? 'border-indigo-500' : 'border-transparent'}`}
+              className={`px-5 py-3 text-sm font-medium transition-colors ${
+                activeTab === 'browser'
+                  ? 'border-b-2 border-indigo-500 text-white'
+                  : 'text-slate-400 hover:text-white'
+              }`}
               onClick={() => setActiveTab('browser')}
             >
-              Browser
+              🌐 Browser
             </button>
           )}
           {consoleOutput && (
             <button
-              className={`px-4 py-2 text-slate-300 hover:text-white border-b-2 ${activeTab === 'console' ? 'border-indigo-500' : 'border-transparent'}`}
+              className={`px-5 py-3 text-sm font-medium transition-colors ${
+                activeTab === 'console'
+                  ? 'border-b-2 border-indigo-500 text-white'
+                  : 'text-slate-400 hover:text-white'
+              }`}
               onClick={() => setActiveTab('console')}
             >
-              Console
+              🖥️ Console
             </button>
           )}
           {!iframeUrl && !consoleOutput && (
-            <span className="px-4 py-2 text-slate-400 text-sm">
+            <span className="px-4 py-3 text-slate-400 text-sm">
               No output available
             </span>
           )}
         </div>
-        
+
         {/* Output Content */}
-        <div className="flex-1 p-4">
+        <div className="flex-1 p-4 overflow-hidden flex flex-col gap-4">
           {iframeUrl && activeTab === 'browser' && (
-            <iframe
-              src={iframeUrl}
-              title="App Output"
-              className="w-full h-full rounded-lg"
-              style={{ border: 'none' }}
-              sandbox="allow-scripts allow-forms allow-same-origin"
-            />
-          )}
-          
-          {consoleOutput && activeTab === 'console' && (
-            <div className="w-full h-full bg-slate-800 p-4 rounded-lg overflow-auto">
-              <div className="flex items-center gap-2 mb-4">
-                <h3 className="text-lg font-semibold text-slate-300">Console Output</h3>
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              </div>
-              <div className="bg-slate-900 p-4 rounded border border-slate-600 h-full overflow-auto">
-                <pre className="text-sm text-slate-200 whitespace-pre-wrap font-mono">
-                  {consoleOutput}
-                </pre>
+            <div className="flex flex-col h-full">
+              <input
+                type="text"
+                value={iframeUrl}
+                onChange={e => setIframeUrl(e.target.value)}
+                className="w-full mb-3 px-4 py-2 rounded-md border border-slate-600 bg-slate-800 text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                placeholder="Enter URL"
+              />
+              <div className="flex-1 overflow-hidden rounded-lg border border-slate-700">
+                <iframe
+                  src={iframeUrl}
+                  title="App Output"
+                  className="w-full h-full"
+                  style={{ border: 'none', backgroundColor: '#1f2937', color: 'white' }}
+                  sandbox="allow-scripts allow-forms allow-same-origin"
+                />
               </div>
             </div>
           )}
-          
-          {!iframeUrl && !consoleOutput && (
-            <div className="w-full h-full bg-slate-800 p-4 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl mb-4">📭</div>
-                <h3 className="text-lg font-semibold text-slate-300 mb-2">No Output Available</h3>
-                <p className="text-slate-400 text-sm">
-                  Run your code first to see output here.
-                </p>
+
+          {consoleOutput && activeTab === 'console' && (
+            <div className="w-full h-full bg-slate-900 p-4 rounded-xl border border-slate-700 overflow-auto">
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-base font-semibold text-slate-200">Console Output</h3>
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               </div>
+              <pre className="text-sm text-green-400 whitespace-pre-wrap font-mono">
+                {consoleOutput}
+              </pre>
             </div>
           )}
         </div>
@@ -91,4 +96,4 @@ const OutputModal = ({
   );
 };
 
-export default OutputModal; 
+export default OutputModal;

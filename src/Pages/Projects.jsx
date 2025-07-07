@@ -385,6 +385,7 @@ const Projects = () => {
           showOutput={showOutput}
           setShowOutput={setShowOutput}
           iframeUrl={iframeUrl}
+          setIframeUrl={setIframeUrl}
           consoleOutput={consoleOutput}
           activeTab={activeTab}
           setActiveTab={setActiveTab}

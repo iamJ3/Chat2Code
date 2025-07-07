@@ -29,33 +29,6 @@ const CodeEditor = ({
   consoleOutput,
   setShowOutput
 }) => {
-  // Helper to get language from file extension
-  function getLanguageFromFileName(fileName) {
-    const extension = fileName.split('.').pop().toLowerCase();
-    switch (extension) {
-      case 'js':
-      case 'jsx':
-      case 'ts':
-      case 'tsx':
-        return 'javascript';
-      case 'java':
-        return 'java';
-      case 'py':
-      case 'python':
-        return 'python';
-      case 'c':
-        return 'c';
-      case 'cpp':
-      case 'cc':
-      case 'cxx':
-        return 'cpp';
-      case 'json':
-        return 'json';
-      default:
-        return 'plaintext';
-    }
-  }
-
   // Helper to check language support in WebContainer
   function getLanguageSupport(fileName) {
     const extension = fileName.split('.').pop().toLowerCase();
@@ -160,30 +133,11 @@ const CodeEditor = ({
               {currentfile}
             </h2>
             <div className="relative w-full max-w-full min-w-0 overflow-x-auto">
-              <div
-                className="w-full min-h-[400px] p-4 bg-slate-800 text-slate-100 border border-slate-700 rounded-lg font-mono text-base leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-indigo-500 overflow-x-auto whitespace-pre"
-                contentEditable
-                suppressContentEditableWarning
+              <textarea
+                className="w-full min-h-[400px] p-4 bg-slate-800 text-slate-100 border border-slate-700 rounded-lg font-mono text-base leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={filetree[currentfile]?.content || ""}
+                onChange={e => setfiletree({ ...filetree, [currentfile]: { content: e.target.value } })}
                 spellCheck={false}
-                style={{ maxWidth: '100%', boxSizing: 'border-box', minHeight: '400px', outline: 'none', whiteSpace: 'pre', overflowWrap: 'normal' }}
-                onInput={e => {
-                  const text = e.currentTarget.innerText;
-                  setfiletree({ ...filetree, [currentfile]: { content: text } });
-                }}
-                onBlur={e => {
-                  const text = e.currentTarget.innerText;
-                  setfiletree({ ...filetree, [currentfile]: { content: text } });
-                }}
-                dangerouslySetInnerHTML={{
-                  __html: (() => {
-                    try {
-                      const lang = getLanguageFromFileName(currentfile);
-                      return hljs.highlight(filetree[currentfile].content, { language: lang }).value;
-                    } catch {
-                      return filetree[currentfile].content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    }
-                  })()
-                }}
               />
             </div>
             {/* Show Output Button */}
