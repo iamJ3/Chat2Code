@@ -1,11 +1,15 @@
 import AppRoutes from './routes/AppRoutes'
 import { UserProvider } from './context/User.context'
+import { ToastProvider } from './context/Toast.context'
+
 const App = () => {
   return (
     <UserProvider>
-      <div>
-        <AppRoutes />
-      </div>
+      <ToastProvider>
+        <div>
+          <AppRoutes />
+        </div>
+      </ToastProvider>
     </UserProvider>
   )
 }

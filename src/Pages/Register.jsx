@@ -1,29 +1,52 @@
-import { use, useState } from 'react';
+import {  useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOffIcon } from 'lucide-react';
 import axios from '../config/axios';
 import { UserContext } from '../context/User.context';
+import { useToast } from '../context/Toast.context';
 import { useContext } from 'react';
 
 const Register = () => {
     const [email, setemail] = useState('')
     const [password, setpassword] = useState('')
-    const {setUser} = useContext(UserContext); // Assuming you want to set user context after registration
+    const [showPassword, setshowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const { setUser } = useContext(UserContext); // Assuming you want to set user context after registration
+    const { showError, showSuccess } = useToast();
 
     const navigate = useNavigate();
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
-        axios.post('/users/register', { email, password })
-            .then((response) => {
+        setIsLoading(true);
+
+        try {
+            const response = await axios.post('/users/register', { email, password });
+            
+            if (response.data.success) {
                 console.log(response.data);
-                localStorage.setItem('token', response.data.token); // Store the token in localStorage
-                setUser(response.data.user); // Set user context
-                navigate('/');
-            })
-            .catch((error) => {
-                console.error('Registration failed:', error.response ? error.response.data : error.message);
-            });
+                localStorage.setItem('token', response.data.token);
+                setUser(response.data.user);
+                showSuccess('Registration successful!');
+                navigate('/home');
+            } else {
+                showError(response.data.message || 'Registration failed');
+            }
+        } catch (error) {
+            console.error('Registration failed:', error.response ? error.response.data : error.message);
+            
+            if (error.response?.status === 503) {
+                showError('Database connection failed. Please try again later.');
+            } else if (error.response?.data?.message) {
+                showError(error.response.data.message);
+            } else if (error.response?.data?.success === false) {
+                showError(error.response.data.message || 'Registration failed');
+            } else {
+                showError('Registration failed. Please try again.');
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -55,24 +78,40 @@ const Register = () => {
                         <div className="flex items-center gap-2 bg-gray-800 px-4 py-3 rounded-xl border border-gray-700 focus-within:ring-2 focus-within:ring-indigo-500">
                             <Lock className="w-5 h-5 text-gray-400" />
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 name="password"
+                                minLength={6}
+                                title="Password must be 6-20 characters"
+                                autoComplete="current-password"
+                                maxLength={20}
                                 placeholder='password'
                                 onChange={(e) => setpassword(e.target.value)}
                                 className="bg-transparent outline-none w-full text-sm placeholder-gray-500 text-white"
                                 required
                             />
+                            <button onClick={() => setshowPassword(!showPassword)}>   
+                                
+                                            {showPassword ? <Eye/> : <EyeOffIcon/>}
+
+
+                            </button>
                         </div>
                     </div>
 
                     {/* Submit */}
                     <button
                         type="submit"
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 transition-all duration-200 text-white font-bold py-3 rounded-xl shadow-lg"
+                        disabled={isLoading}
+                        className={`w-full transition-all duration-200 text-white font-bold py-3 rounded-xl shadow-lg ${
+                            isLoading 
+                                ? 'bg-indigo-400 cursor-not-allowed' 
+                                : 'bg-indigo-600 hover:bg-indigo-700'
+                        }`}
                     >
-                        Register
+                        {isLoading ? 'Creating Account...' : 'Register'}
                     </button>
                 </form>
+
 
                 <p className="text-center text-sm text-gray-400 mt-8">
                     Already have an account?{' '}

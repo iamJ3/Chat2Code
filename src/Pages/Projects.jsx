@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "../config/axios";
 import { UserContext } from "../context/User.context.jsx";
+import { useToast } from "../context/Toast.context";
 import 'highlight.js/styles/github-dark.css';
 import { getWebContainer } from "../config/WebContainer";
 import {
@@ -24,6 +25,7 @@ import { WriteWIthAI, SyntaxHighlightedCode } from "../utils/aiMessageUtils.jsx"
 const Projects = () => {
   const location = useLocation();
   const { user } = useContext(UserContext);
+  const { showError, showSuccess } = useToast();
 
   const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -116,14 +118,42 @@ const Projects = () => {
       setMessages((prev) => [...prev, data]);
     });
 
-    axios.get(`/projects/get-project/${project._id}`).then((res) => {
-      setProject(res.data.project);
-    });
+    // Fetch project data
+    axios.get(`/projects/get-project/${project._id}`)
+      .then((res) => {
+        if (res.data.success) {
+          setProject(res.data.project);
+        } else {
+          showError(res.data.message || 'Failed to load project');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load project:', error);
+        if (error.response?.status === 503) {
+          showError('Database connection failed. Please try again later.');
+        } else {
+          showError('Failed to load project. Please refresh the page.');
+        }
+      });
 
-    axios.get("/users/all").then((res) => {
-      setUsers(res.data.users);
-    });
-  }, []);
+    // Fetch users data
+    axios.get("/users/all")
+      .then((res) => {
+        if (res.data.success) {
+          setUsers(res.data.users);
+        } else {
+          showError(res.data.message || 'Failed to load users');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load users:', error);
+        if (error.response?.status === 503) {
+          showError('Database connection failed. Please try again later.');
+        } else {
+          showError('Failed to load users. Please refresh the page.');
+        }
+      });
+  }, [message.filetree, project._id, showError, webcontainer]);
 
 
   useEffect(() => {
@@ -146,7 +176,22 @@ const Projects = () => {
         projectId: project._id,
         users: Array.from(selectedUserId),
       })
-      .then(() => setIsModalOpen(false));
+      .then((res) => {
+        if (res.data.success) {
+          showSuccess(res.data.message || 'Collaborators added successfully!');
+          setIsModalOpen(false);
+        } else {
+          showError(res.data.message || 'Failed to add collaborators');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to add collaborators:', error);
+        if (error.response?.status === 503) {
+          showError('Database connection failed. Please try again later.');
+        } else {
+          showError(error.response?.data?.message || 'Failed to add collaborators');
+        }
+      });
   };
 
   const SendMsg = () => {
