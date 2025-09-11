@@ -43,3 +43,7 @@ scroll-behavior:smooth ;
   color: white;
 }👈*/
 html,body { color: white; }
+
+img {
+  mix-blend-mode: multiply;
+}

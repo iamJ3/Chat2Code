@@ -1,7 +1,8 @@
-import {  Sparkles, ArrowRight , Linkedin, Twitter} from 'lucide-react';
+import {  Sparkles, ArrowRight , Linkedin, Twitter, Github} from 'lucide-react';
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { features, quickActions } from "../utils/Data.jsx";
+import Footer from '../components/Footer.jsx';
 
 
 export default function LandingPage() {
@@ -17,7 +18,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-black via-gray-900 to-black text-white min-h-screen flex flex-col relative overflow-hidden">
+    <div className="bg-gradient-to-b from-[#292723] via-[#111112] to-[#0a0a0a] text-white min-h-screen flex flex-col relative overflow-hidden">
 
       {/* Navbar */}
       <Navbar />
@@ -25,14 +26,15 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="flex-1 flex flex-col justify-center items-center text-center pt-24 pb-12 px-4 relative z-10">
         <motion.h1
-          className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 leading-tight"
+          className="text-4xl sm:text-5xl md:text-7xl gap-2 font-black mb-6 leading-tight"
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
         >
           <span className="block bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent mb-2">
-            Chat & Code with Friends.
+            Chat & Code with AI 
           </span>
+          & Friends
           <span className="inline-block mt-4">
             <Sparkles className="w-10 h-10 text-[#D97757] animate-pulse drop-shadow-2xl" />
           </span>
@@ -76,7 +78,7 @@ export default function LandingPage() {
             rel="noopener noreferrer"
             className="px-8 py-4 text-lg font-bold rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-[#D97757]/20 hover:border-[#D97757]/40 transition-all duration-300 flex items-center justify-center gap-3 transform hover:scale-105 shadow-xl focus:outline-none focus:ring-2 focus:ring-[#D97757]/40"
           >
-            View on GitHub
+            View on GitHub <Github/>
           </a>
         </motion.div>
         {/* Quick Actions */}
@@ -190,45 +192,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="w-full py-10 border-t border-white/10 text-center text-gray-400 mt-auto relative backdrop-blur-lg bg-white/5 z-10">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex flex-col items-center gap-6">
-            <span className="text-sm font-medium">&copy; {new Date().getFullYear()} Chat2Code. All rights reserved.</span>
-            <span className="text-sm">
-              Made by{' '}
-              <a
-                href="https://www.linkedin.com/in/jatin-sharma-x/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#D97757] hover:text-orange-400 transition-colors duration-300 font-semibold focus:outline-none focus:underline"
-              >
-                Jatin Sharma
-              </a>
-              {' '}with <span className="text-[#D97757] animate-pulse">❤️</span>
-            </span>
-            <div className="flex gap-6 mt-2">
-              <a
-                href="https://x.com/Nitaj333"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 rounded-2xl bg-white/10 hover:bg-[#D97757]/10 border border-white/10 hover:border-[#D97757]/20 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#D97757]/30"
-                aria-label="X (Twitter)"
-              >
-                <Twitter className="w-5 h-5 text-gray-400 hover:text-[#D97757] transition-colors duration-300" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/jatin-sharma69/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-4 rounded-2xl bg-white/10 hover:bg-[#D97757]/10 border border-white/10 hover:border-[#D97757]/20 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#D97757]/30"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5 text-gray-400 hover:text-[#D97757] transition-colors duration-300" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
+     <Footer/>
     </div>
   );
 }

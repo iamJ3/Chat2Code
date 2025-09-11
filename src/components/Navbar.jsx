@@ -9,7 +9,9 @@ const Navbar = () => {
       {/* Logo */}
       <div className="flex items-center gap-3 group cursor-pointer">
         <div className="relative">
-          <Bot className="w-8 h-8 text-[#D97757] group-hover:scale-110 transition-all duration-300" />
+          <img src="/icon_2.gif" className="w-8 bg-black  h-8 text-[#D97757] group-hover:scale-110 transition-all duration-300"/>
+          {/* <Bot  /> */}
+          
           <div className="absolute inset-0 bg-[#D97757]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         </div>
         <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">

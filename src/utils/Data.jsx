@@ -23,7 +23,7 @@ const quickActions = [
       gradient: "from-[#D97757]/10 to-[#D97757]/5"
     },
     {
-      title: "Run & Test Code in Browser",
+      title: "Run & Test JS Code in Browser",
       desc: "No setup needed. Instantly run and test your code in a secure, isolated environment.",
       icon: <TerminalSquare className="w-10 h-10 text-[#D97757]" />,
       gradient: "from-[#D97757]/10 to-[#D97757]/5"
