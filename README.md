@@ -1,11 +1,12 @@
 # AI Chat App
 
 A real-time collaborative code editor and AI-powered development environment built with React, Node.js, and WebContainers. Features a modern, component-based architecture with enhanced output display and comprehensive language support.
+## Screenshots
 
-images-
-![image](https://github.com/user-attachments/assets/b22c7cf0-8586-44cc-8a2a-63488449a261)
+![Landing Page](https://github.com/user-attachments/assets/782cbe10-4213-497f-8a5e-fd471b844480)
+![Navbar](https://github.com/user-attachments/assets/47024d73-19cb-48f0-92bc-0d7e1ca20ed3)
+![Footer](https://github.com/user-attachments/assets/2c22517b-7154-4d08-aa6c-f6eab255b20c)
 
-![image](https://github.com/user-attachments/assets/d3c60f73-00c8-45a0-9a9b-bb6211e17bc9)
 ## 🚀 Features
 
 ### Core Features
