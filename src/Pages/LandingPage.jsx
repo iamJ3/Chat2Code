@@ -18,7 +18,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-[#292723] via-[#111112] to-[#0a0a0a] text-white min-h-screen flex flex-col relative overflow-hidden">
+    <div className="bg-gradient-to-b from-[#0b0a09] via-[#342e24] to-[#0a0a0a] text-white min-h-screen flex flex-col relative overflow-hidden">
 
       {/* Navbar */}
       <Navbar />

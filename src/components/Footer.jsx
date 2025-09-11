@@ -10,7 +10,7 @@ const Footer = () => {
             <span className="text-sm">
               Made by{' '}
               <a
-                href="https://www.linkedin.com/in/jatin-sharma-x/"
+                href="https://x.com/Nitaj333"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#D97757] hover:text-orange-400 transition-colors duration-300 font-semibold focus:outline-none focus:underline"
