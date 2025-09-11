@@ -1,58 +1,10 @@
-import React from "react";
-import { 
-  Bot, Users, ShieldCheck, Sparkles, ArrowRight, TerminalSquare, Linkedin, Twitter 
-} from 'lucide-react';
+import {  Sparkles, ArrowRight , Linkedin, Twitter} from 'lucide-react';
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
+import { features, quickActions } from "../utils/Data.jsx";
 
-const ACCENT = "#D97757";
 
 export default function LandingPage() {
-  const quickActions = [
-    { icon: <Sparkles className="w-6 h-6 text-[#D97757]" />, label: "Generate Code" },
-    { icon: <Bot className="w-6 h-6 text-[#D97757]" />, label: "Chat with AI" },
-    { icon: <TerminalSquare className="w-6 h-6 text-[#D97757]" />, label: "Run Code" },
-    { icon: <Users className="w-6 h-6 text-[#D97757]" />, label: "Talk to Friends" },
-  ];
-
-  const features = [
-    {
-      title: "AI Code Generation",
-      desc: "Let AI (powered by Google Gemini) write code for you, from snippets to full modules. Save time and focus on what matters.",
-      icon: <Sparkles className="w-10 h-10 text-[#D97757]" />,
-      gradient: "from-[#D97757]/10 to-[#D97757]/5"
-    },
-    {
-      title: "Talk to AI, Instantly",
-      desc: "Ask questions, get explanations, and brainstorm ideas with your AI assistant, right in your workspace. Powered by Gemini.",
-      icon: <Bot className="w-10 h-10 text-[#D97757]" />,
-      gradient: "from-[#D97757]/10 to-[#D97757]/5"
-    },
-    {
-      title: "Run & Test Code in Browser",
-      desc: "No setup needed. Instantly run and test your code in a secure, isolated environment.",
-      icon: <TerminalSquare className="w-10 h-10 text-[#D97757]" />,
-      gradient: "from-[#D97757]/10 to-[#D97757]/5"
-    },
-    {
-      title: "Collaborate with Friends & AI",
-      desc: "Invite friends, pair-program, and chat with AI together. The ultimate team coding experience.",
-      icon: <Users className="w-10 h-10 text-[#D97757]" />,
-      gradient: "from-[#D97757]/10 to-[#D97757]/5"
-    },
-    {
-      title: "Secure & Private",
-      desc: "Your conversations and code are always encrypted and safe. Privacy is our top priority.",
-      icon: <ShieldCheck className="w-10 h-10 text-[#D97757]" />,
-      gradient: "from-[#D97757]/10 to-[#D97757]/5"
-    },
-    {
-      title: "Multi-Modal Support",
-      desc: "Chat, code, and collaborate with support for text, code, and more—all in one place.",
-      icon: <Sparkles className="w-10 h-10 text-[#D97757]" />,
-      gradient: "from-[#D97757]/10 to-[#D97757]/5"
-    },
-  ];
 
   // Framer Motion variants
   const fadeInUp = {
@@ -68,7 +20,7 @@ export default function LandingPage() {
     <div className="bg-gradient-to-br from-black via-gray-900 to-black text-white min-h-screen flex flex-col relative overflow-hidden">
 
       {/* Navbar */}
-      <Navbar/>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="flex-1 flex flex-col justify-center items-center text-center pt-24 pb-12 px-4 relative z-10">
@@ -115,7 +67,7 @@ export default function LandingPage() {
           custom={4}
         >
           <button className="group relative px-8 py-4 text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-[#D97757] to-orange-400 hover:from-orange-400 hover:to-[#D97757] transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-[#D97757]/40 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/40">
-            Get Started 
+            Get Started
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
           </button>
           <a
@@ -244,10 +196,10 @@ export default function LandingPage() {
             <span className="text-sm font-medium">&copy; {new Date().getFullYear()} Chat2Code. All rights reserved.</span>
             <span className="text-sm">
               Made by{' '}
-              <a 
-                href="https://www.linkedin.com/in/jatin-sharma-x/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.linkedin.com/in/jatin-sharma-x/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-[#D97757] hover:text-orange-400 transition-colors duration-300 font-semibold focus:outline-none focus:underline"
               >
                 Jatin Sharma
@@ -255,20 +207,20 @@ export default function LandingPage() {
               {' '}with <span className="text-[#D97757] animate-pulse">❤️</span>
             </span>
             <div className="flex gap-6 mt-2">
-              <a 
-                href="https://x.com/Nitaj333" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="p-4 rounded-2xl bg-white/10 hover:bg-[#D97757]/10 border border-white/10 hover:border-[#D97757]/20 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#D97757]/30" 
+              <a
+                href="https://x.com/Nitaj333"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 rounded-2xl bg-white/10 hover:bg-[#D97757]/10 border border-white/10 hover:border-[#D97757]/20 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#D97757]/30"
                 aria-label="X (Twitter)"
               >
                 <Twitter className="w-5 h-5 text-gray-400 hover:text-[#D97757] transition-colors duration-300" />
               </a>
-              <a 
-                href="https://www.linkedin.com/in/jatin-sharma69/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="p-4 rounded-2xl bg-white/10 hover:bg-[#D97757]/10 border border-white/10 hover:border-[#D97757]/20 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#D97757]/30" 
+              <a
+                href="https://www.linkedin.com/in/jatin-sharma69/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 rounded-2xl bg-white/10 hover:bg-[#D97757]/10 border border-white/10 hover:border-[#D97757]/20 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#D97757]/30"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5 text-gray-400 hover:text-[#D97757] transition-colors duration-300" />
