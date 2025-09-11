@@ -18,7 +18,7 @@ scroll-behavior:smooth ;
 /* Firefox */
 * {
   scrollbar-width: thin;             /* Makes it slim */
-  scrollbar-color: #6366f1 #1e293b;  /* thumb, track */
+  scrollbar-color: #EE813F #1e293b;  /* thumb, track */
 }
 
 /* Chrome, Edge, Safari */
@@ -31,15 +31,19 @@ scroll-behavior:smooth ;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #6366f1;         /* Indigo thumb */
+  background-color: #EE813F;         /* Indigo thumb */
   border-radius: 6px;                
   border: 2px solid #1e293b;         /* Padding inside track */
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: #818cf8;         /* Lighter indigo on hover */
+  background-color: #EE813F;         /* Lighter indigo on hover */
 }
 /*👉body {
   color: white;
 }👈*/
 html,body { color: white; }
+
+img {
+  mix-blend-mode: multiply;
+}
