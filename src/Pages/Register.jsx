@@ -84,7 +84,7 @@ const Register = () => {
                                 title="Password must be 6-20 characters"
                                 autoComplete="current-password"
                                 maxLength={20}
-                                placeholder='password'
+                                placeholder='create password'
                                 onChange={(e) => setpassword(e.target.value)}
                                 className="bg-transparent outline-none w-full text-sm placeholder-gray-500 text-white"
                                 required

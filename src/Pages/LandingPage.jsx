@@ -3,10 +3,11 @@ import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import { features, quickActions } from "../utils/Data.jsx";
 import Footer from '../components/Footer.jsx';
-
+import {useNavigate} from "react-router-dom"
 
 export default function LandingPage() {
 
+const navigate = useNavigate();
   // Framer Motion variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
@@ -19,7 +20,6 @@ export default function LandingPage() {
 
   return (
     <div className="bg-gradient-to-b from-[#0b0a09] via-[#342e24] to-[#0a0a0a] text-white min-h-screen flex flex-col relative overflow-hidden">
-
       {/* Navbar */}
       <Navbar />
 
@@ -68,7 +68,7 @@ export default function LandingPage() {
           variants={fadeInUp}
           custom={4}
         >
-          <button className="group relative px-8 py-4 text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-[#D97757] to-orange-400 hover:from-orange-400 hover:to-[#D97757] transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-[#D97757]/40 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/40">
+          <button onClick={()=>navigate('/register')} className="group relative px-8 py-4 text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-[#D97757] to-orange-400 hover:from-orange-400 hover:to-[#D97757] transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-[#D97757]/40 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/40">
             Get Started
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
           </button>
