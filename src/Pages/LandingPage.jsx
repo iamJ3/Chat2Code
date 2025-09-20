@@ -68,7 +68,7 @@ const navigate = useNavigate();
           variants={fadeInUp}
           custom={4}
         >
-          <button onClick={()=>navigate('/login')} className="group relative px-8 py-4 text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-[#D97757] to-orange-400 hover:from-orange-400 hover:to-[#D97757] transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-[#D97757]/40 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/40">
+          <button onClick={()=>navigate('/register')} className="group relative px-8 py-4 text-lg font-bold rounded-2xl text-white bg-gradient-to-r from-[#D97757] to-orange-400 hover:from-orange-400 hover:to-[#D97757] transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-[#D97757]/40 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-[#D97757]/40">
             Get Started
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
           </button>
